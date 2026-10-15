@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="Gestore personale di credenziali, con archivio cifrato sul dispositivo.">
+<link rel="manifest" href="manifest.json">
+<title>Vault — Gestore password</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1120;--panel:#131d30;--panel2:#18253b;--line:#2b3a53;--text:#f2f6ff;--muted:#9eacc3;--accent:#8b7cff;--accent2:#4dd9bd;--danger:#ff7187;--shadow:0 18px 50px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#242b57 0,transparent 40%),radial-gradient(ellipse at 100% 20%,#123c48 0,transparent 35%),var(--bg);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);min-height:100vh}
+button,input,textarea{font:inherit}button{cursor:pointer;border:0} .shell{max-width:1000px;margin:auto;padding:20px 16px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 26px}.brand{display:flex;gap:12px;align-items:center}.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--accent),#4dd9bd);display:grid;place-items:center;color:#101827;font-size:24px;box-shadow:0 8px 25px #8b7cff45}.brand h1{font-size:23px;margin:0;letter-spacing:-.7px}.brand p{margin:1px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{padding:10px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);color:var(--text);font-weight:650}.btn.primary{background:linear-gradient(135deg,var(--accent),#6b68e8);border-color:transparent;color:white}.btn.ghost{background:transparent}.btn.danger{color:var(--danger)}.btn:active{transform:scale(.98)}
+.hero{border:1px solid #ffffff16;background:linear-gradient(115deg,#202847d9,#122b36d9);border-radius:24px;padding:22px;margin-bottom:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:190px;height:190px;border:1px solid #ffffff12;border-radius:50%;right:-50px;top:-70px;box-shadow:0 0 0 25px #ffffff05,0 0 0 50px #ffffff03;pointer-events:none}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent2);font-weight:800}.hero h2{font-size:clamp(23px,5vw,32px);line-height:1.15;letter-spacing:-1px;margin:7px 0}.hero p{margin:0;color:#c2cee0;max-width:570px}.stats{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.stat{border:1px solid #ffffff15;background:#ffffff08;border-radius:12px;padding:10px 13px;min-width:115px}.stat strong{display:block;font-size:20px}.stat span{color:var(--muted);font-size:11px}
+.toolbar{display:flex;gap:10px;margin:18px 0;align-items:center}.searchwrap{flex:1;position:relative}.searchwrap span{position:absolute;left:14px;top:10px;font-size:18px;color:var(--muted)}.search{width:100%;background:#101a2b;border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 42px;color:var(--text);outline:none}.search:focus,input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #8b7cff25;outline:none}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.entry{background:linear-gradient(150deg,#172238,#111b2d);border:1px solid var(--line);border-radius:18px;padding:16px;min-width:0;transition:transform .15s,border-color .15s}.entry:hover{transform:translateY(-2px);border-color:#655ed2}.entry-head{display:flex;align-items:center;gap:11px;margin-bottom:13px}.siteicon{height:42px;width:42px;border-radius:13px;background:linear-gradient(145deg,#29365a,#203f4b);display:grid;place-items:center;font-weight:850;color:#b9f8e8;font-size:17px;flex-shrink:0}.siteinfo{min-width:0;flex:1}.siteinfo h3{font-size:16px;margin:0;overflow-wrap:anywhere}.siteinfo p{margin:2px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}.dots{color:var(--muted);background:transparent;font-size:20px;padding:4px}.fieldrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #ffffff0d}.fieldlabel{width:74px;flex-shrink:0;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px}.fieldvalue{min-width:0;flex:1;overflow-wrap:anywhere;font-size:13px}.mini{border:1px solid var(--line);background:#ffffff07;color:#dce5f5;border-radius:8px;padding:5px 8px;font-size:11px}.entry-actions{display:flex;gap:7px;margin-top:12px}.entry-actions button{flex:1}.empty{grid-column:1/-1;text-align:center;padding:45px 20px;border:1px dashed #394760;border-radius:20px;color:var(--muted)}.empty .symbol{font-size:34px;margin-bottom:8px}.empty h3{color:var(--text);margin:4px}.footnote{color:#8291a9;font-size:11px;text-align:center;margin:24px 0 0}
+.overlay{position:fixed;inset:0;background:#050914c9;backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px;z-index:10;overflow:auto}.overlay.show{display:flex}.modal{width:min(100%,490px);background:#111b2c;border:1px solid #34445e;border-radius:22px;padding:23px;box-shadow:var(--shadow);max-height:94vh;overflow:auto}.modal h2{margin:0 0 6px;font-size:23px}.modal .sub{margin:0 0 20px;color:var(--muted);font-size:13px}.formrow{margin:13px 0}.formrow label{display:block;font-size:12px;color:#bdc9dc;margin-bottom:6px;font-weight:700}.control{width:100%;background:#0a1322;border:1px solid #34445b;border-radius:11px;padding:12px;color:var(--text)}textarea.control{resize:vertical;min-height:80px}.inputline{display:flex;gap:8px}.inputline .control{min-width:0;flex:1}.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}.notice{font-size:12px;color:#a9b7cd;background:#ffffff08;border:1px solid #ffffff12;border-radius:12px;padding:11px;margin-top:13px}.error{color:#ff9eae;font-size:12px;min-height:18px}.auth{max-width:430px;margin:7vh auto 0}.auth .logo{margin-bottom:16px}.auth h2{font-size:28px;letter-spacing:-.7px}.auth p{color:var(--muted)}.hide{display:none!important}
+@media(max-width:650px){.shell{padding:12px 12px 32px}.top{align-items:flex-start;margin:6px 0 18px}.brand h1{font-size:20px}.top-actions .btn{padding:9px 10px;font-size:12px}.hero{padding:19px;border-radius:20px}.list{grid-template-columns:1fr}.toolbar{align-items:stretch}.toolbar .btn{white-space:nowrap;padding:10px}.entry{padding:15px}.stat{flex:1;min-width:95px}.modal{padding:20px}.brand p{max-width:160px}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <section id="authView" class="auth">
+    <div class="logo">✦</div>
+    <div class="eyebrow">Il tuo spazio digitale</div>
+    <h2 id="authTitle">Il tuo archivio, sotto chiave.</h2>
+    <p id="authDesc">Crea una password principale per proteggere le credenziali. I dati vengono cifrati sul dispositivo.</p>
+    <div class="formrow"><label for="master">Password principale</label><div class="inputline"><input id="master" class="control" type="password" autocomplete="current-password" placeholder="Almeno 10 caratteri"><button class="btn" id="toggleMaster" type="button">Mostra</button></div></div>
+    <div id="confirmWrap" class="formrow hide"><label for="master2">Conferma password principale</label><input id="master2" class="control" type="password" autocomplete="new-password" placeholder="Ripeti la password"></div>
+    <div id="authError" class="error"></div>
+    <button id="unlockBtn" class="btn primary" style="width:100%">Crea archivio sicuro</button>
+    <div class="notice">⚠️ La password principale non può essere recuperata. Se la dimentichi, l'archivio non sarà più leggibile. Conserva una copia di backup cifrata.</div>
+  </section>
+
+  <section id="appView" class="hide">
+    <header class="top">
+      <div class="brand"><div class="logo">✦</div><div><h1>Vault</h1><p>Le tue credenziali, organizzate.</p></div></div>
+      <div class="top-actions"><button class="btn ghost" id="backupBtn">↗ Backup</button><button class="btn" id="lockBtn">⏻ Blocca</button></div>
+    </header>
+    <section class="hero">
+      <div class="eyebrow">Archivio personale</div><h2>Tutto sotto controllo.</h2><p>Un unico posto per i tuoi accessi, con ricerca rapida e protezione tramite cifratura locale.</p>
+      <div class="stats"><div class="stat"><strong id="count">0</strong><span>Credenziali salvate</span></div><div class="stat"><strong>🔒 AES‑GCM</strong><span>Archivio cifrato</span></div><div class="stat"><strong>Offline</strong><span>Disponibile senza rete dopo il primo accesso</span></div></div>
+    </section>
+    <div class="toolbar"><div class="searchwrap"><span>⌕</span><input id="search" class="search" type="search" placeholder="Cerca per nome del sito..." aria-label="Cerca per nome del sito"></div><button class="btn primary" id="addBtn">＋ Nuovo</button></div>
+    <div id="entries" class="list"></div>
+    <p class="footnote">I dati restano in questo browser/dispositivo. Blocca l'archivio quando hai finito.</p>
+  </section>
+</main>
+
+<div id="entryOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
+ <div class="modal"><h2 id="entryTitle">Nuova credenziale</h2><p class="sub">Inserisci i dati da conservare nell'archivio cifrato.</p>
+  <form id="entryForm">
+   <input type="hidden" id="entryId">
+   <div class="formrow"><label for="site">SITO *</label><input id="site" class="control" required maxlength="180" placeholder="Es. Portale aziendale"></div>
+   <div class="formrow"><label for="username">NOME UTENTE</label><input id="username" class="control" maxlength="240" autocomplete="off" placeholder="Nome utente o email"></div>
+   <div class="formrow"><label for="password">PASSWORD</label><div class="inputline"><input id="password" class="control" type="password" maxlength="2000" autocomplete="new-password" placeholder="Password del servizio"><button type="button" class="btn" id="toggleEntryPass">Mostra</button></div></div>
+   <div class="formrow"><label for="notes">NOTE</label><textarea id="notes" class="control" maxlength="5000" placeholder="Informazioni aggiuntive (facoltativo)"></textarea></div>
+   <div class="error" id="formError"></div>
+   <div class="modal-actions"><button type="button" class="btn" id="cancelEntry">Annulla</button><button type="submit" class="btn primary">Salva in sicurezza</button></div>
+  </form>
+ </div>
+</div>
+<div id="backupOverlay" class="overlay" role="dialog" aria-modal="true">
+ <div class="modal"><h2>Backup cifrato</h2><p class="sub">Esporta o importa una copia del tuo archivio. Il file contiene dati cifrati, non credenziali in chiaro.</p>
+  <div class="notice">Il backup può essere ripristinato solo con la password principale usata per cifrare l'archivio. Conservalo in un luogo sicuro.</div>
+  <div class="modal-actions"><button class="btn" id="cancelBackup">Chiudi</button><button class="btn" id="importBtn">Importa backup</button><button class="btn primary" id="exportBtn">Esporta backup</button></div>
+  <input id="backupFile" class="hide" type="file" accept=".json,application/json">
+  <div class="error" id="backupError"></div>
+ </div>
+</div>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const STORE='vault-ciphertext-v1', META='vault-meta-v1', ITER=310000;
+let key=null, records=[], meta=null, isNew=false;
+const enc=new TextEncoder(), dec=new TextDecoder();
+const b64 = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+const random = n => crypto.getRandomValues(new Uint8Array(n));
+async function derive(pass,salt){return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:ITER,hash:'SHA-256'},await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']),{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function encrypt(data,k=key){const iv=random(12);const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,enc.encode(JSON.stringify(data)));return {iv:b64(iv),data:b64(ct)};}
+async function decrypt(box,k=key){const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(box.iv)},k,unb64(box.data));return JSON.parse(dec.decode(plain));}
+function getStore(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function setStore(k,v){localStorage.setItem(k,v)}
+function setAuthMode(){isNew=!getStore(META);$('confirmWrap').classList.toggle('hide',!isNew);$('authTitle').textContent=isNew?'Crea il tuo archivio sicuro.':'Bentornato nel tuo Vault.';$('authDesc').textContent=isNew?'Scegli una password principale robusta. Servirà per cifrare e riaprire l’archivio.':'Inserisci la password principale per decifrare e aprire il tuo archivio.';$('unlockBtn').textContent=isNew?'Crea archivio sicuro':'Sblocca archivio';$('master').autocomplete=isNew?'new-password':'current-password';}
+function showApp(){ $('authView').classList.add('hide');$('appView').classList.remove('hide');render(); }
+function lock(){key=null;records=[];$('master').value='';$('master2').value='';$('appView').classList.add('hide');$('authView').classList.remove('hide');$('search').value='';setAuthMode();}
+async function unlock(){const pass=$('master').value;$('authError').textContent='';if(!pass){$('authError').textContent='Inserisci la password principale.';return;}
+try{
+ if(isNew){if(pass.length<10){$('authError').textContent='Usa almeno 10 caratteri per la password principale.';return;}if(pass!==$('master2').value){$('authError').textContent='Le due password non coincidono.';return;}const salt=random(16);key=await derive(pass,salt);meta={salt:b64(salt),iterations:ITER,version:1};records=[];setStore(META,JSON.stringify(meta));setStore(STORE,JSON.stringify(await encrypt(records)));showApp();}
+ else{meta=JSON.parse(getStore(META));key=await derive(pass,unb64(meta.salt));records=await decrypt(JSON.parse(getStore(STORE)));showApp();}
+}catch(e){key=null;$('authError').textContent='Password non corretta oppure archivio non leggibile. Riprova.';}}
+async function persist(){setStore(STORE,JSON.stringify(await encrypt(records)));render();}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function initials(s){return (s.trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('')||'•').toUpperCase();}
+function render(){if(!key)return;const q=$('search').value.trim().toLocaleLowerCase('it');const list=records.filter(r=>r.site.toLocaleLowerCase('it').includes(q)).sort((a,b)=>a.site.localeCompare(b.site,'it'));$('count').textContent=records.length;
+if(!list.length){$('entries').innerHTML=`<div class="empty"><div class="symbol">${q?'⌕':'✦'}</div><h3>${q?'Nessun sito trovato':'Il tuo Vault è pronto'}</h3><p>${q?'Prova con un altro nome del sito.':'Aggiungi la prima credenziale per iniziare a organizzare i tuoi accessi.'}</p>${q?'':'<span></span>'}</div>`;return;}
+$('entries').innerHTML=list.map(r=>`<article class="entry"><div class="entry-head"><div class="siteicon">${esc(initials(r.site))}</div><div class="siteinfo"><h3>${esc(r.site)}</h3><p>${esc(r.username||'Nome utente non indicato')}</p></div><button class="dots" title="Modifica" aria-label="Modifica ${esc(r.site)}" data-edit="${esc(r.id)}">⋯</button></div>
+<div class="fieldrow"><span class="fieldlabel">Password</span><span class="fieldvalue" id="pw-${esc(r.id)}">••••••••••</span><button class="mini" data-reveal="${esc(r.id)}">Mostra</button></div>
+${r.notes?`<div class="fieldrow"><span class="fieldlabel">Note</span><span class="fieldvalue">${esc(r.notes)}</span></div>`:''}
+<div class="entry-actions"><button class="mini" data-copyuser="${esc(r.id)}">Copia utente</button><button class="mini" data-copypass="${esc(r.id)}">Copia password</button><button class="mini" data-edit="${esc(r.id)}">Modifica</button></div></article>`).join('');
+}
+function openEntry(r=null){$('entryForm').reset();$('entryId').value=r?.id||'';$('entryTitle').textContent=r?'Modifica credenziale':'Nuova credenziale';$('site').value=r?.site||'';$('username').value=r?.username||'';$('password').value=r?.password||'';$('notes').value=r?.notes||'';$('formError').textContent='';$('entryOverlay').classList.add('show');setTimeout(()=>$('site').focus(),50);}
+function closeEntry(){$('entryOverlay').classList.remove('show');}
+async function copyText(s){try{await navigator.clipboard.writeText(s);return true}catch(e){const ta=document.createElement('textarea');ta.value=s;document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok;}}
+function b64url(){return location.protocol==='https:'||location.hostname==='localhost';}
+$('unlockBtn').addEventListener('click',unlock);$('master').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});$('master2').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+$('toggleMaster').onclick=()=>{const el=$('master');el.type=el.type==='password'?'text':'password';$('toggleMaster').textContent=el.type==='password'?'Mostra':'Nascondi';};
+$('toggleEntryPass').onclick=()=>{const el=$('password');el.type=el.type==='password'?'text':'password';$('toggleEntryPass').textContent=el.type==='password'?'Mostra':'Nascondi';};
+$('addBtn').onclick=()=>openEntry();$('cancelEntry').onclick=closeEntry;$('search').addEventListener('input',render);$('lockBtn').onclick=lock;
+$('entryForm').addEventListener('submit',async e=>{e.preventDefault();const site=$('site').value.trim();if(!site){$('formError').textContent='Il campo SITO è obbligatorio.';return;}const id=$('entryId').value||crypto.randomUUID();const item={id,site,username:$('username').value.trim(),password:$('password').value,notes:$('notes').value.trim(),updatedAt:new Date().toISOString()};const i=records.findIndex(r=>r.id===id);if(i>=0)records[i]=item;else records.push(item);try{await persist();closeEntry()}catch(err){$('formError').textContent='Errore nel salvataggio locale. Verifica lo spazio disponibile.';}});
+$('entries').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const id=b.dataset.edit||b.dataset.reveal||b.dataset.copyuser||b.dataset.copypass;const r=records.find(x=>x.id===id);if(!r)return;
+if(b.dataset.edit){openEntry(r);return;}if(b.dataset.reveal){const el=$('pw-'+id);const open=b.textContent==='Nascondi';el.textContent=open?'••••••••••':(r.password||'(vuota)');b.textContent=open?'Mostra':'Nascondi';return;}
+const value=b.dataset.copyuser!==undefined?r.username:r.password;const ok=await copyText(value||'');b.textContent=ok?'Copiato ✓':'Copia non riuscita';setTimeout(()=>{if(b.isConnected)b.textContent=b.dataset.copyuser!==undefined?'Copia utente':'Copia password'},1200);
+});
+$('backupBtn').onclick=()=>{$('backupError').textContent='';$('backupOverlay').classList.add('show')};$('cancelBackup').onclick=()=>$('backupOverlay').classList.remove('show');
+$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({format:'vault-backup-v1',meta,ciphertext:JSON.parse(getStore(STORE))},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vault-backup-cifrato.json';a.click();URL.revokeObjectURL(a.href);};
+$('importBtn').onclick=()=>$('backupFile').click();
+$('backupFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('backupError').textContent='';try{const obj=JSON.parse(await f.text());if(obj.format!=='vault-backup-v1'||!obj.meta||!obj.ciphertext)throw Error('Formato non valido');const pass=prompt('Inserisci la password principale usata per questo backup:');if(pass===null)return;const k=await derive(pass,unb64(obj.meta.salt));const imported=await decrypt(obj.ciphertext,k);if(!Array.isArray(imported))throw Error('Archivio non valido');if(!confirm('L’importazione sostituirà le credenziali attualmente presenti. Continuare?'))return;key=k;meta=obj.meta;records=imported;setStore(META,JSON.stringify(meta));setStore(STORE,JSON.stringify(obj.ciphertext));$('backupOverlay').classList.remove('show');render();alert('Backup ripristinato.');}catch(err){$('backupError').textContent='Impossibile importare il backup: file non valido o password errata.';}finally{e.target.value='';}};
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show')}));
+setAuthMode();
+if('serviceWorker' in navigator && b64url())window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+})();
+</script>
+</body>
+</html>
